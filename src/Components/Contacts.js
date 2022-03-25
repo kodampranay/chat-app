@@ -128,7 +128,7 @@ const Contacts = () => {
   //accepting user
 
   async function accept(notify){
-     const {data}=await axios.get(`'https://chat-nodeapp-backend.herokuapp.com/${notify}/accept`,{headers:{token:localStorage.getItem('chat-app-user')}})
+     const {data}=await axios.get(`https://chat-nodeapp-backend.herokuapp.com/${notify}/accept`,{headers:{token:localStorage.getItem('chat-app-user')}})
      if(data.status===1)
      {
        toast.success(data.message)
