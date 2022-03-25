@@ -59,7 +59,7 @@ const Chat = () => {
       navigate("/contacts");
     }
     if (localStorage.getItem("chat-app-user")) {
-      setMyimage(JSON.parse(localStorage.getItem("chat-app-user")).profileimg);
+      setMyimage('https://chat-nodeapp-backend.herokuapp.com'+JSON.parse(localStorage.getItem("chat-app-user")).profileimg);
       const { data } = await axios.get("https://chat-nodeapp-backend.herokuapp.com/auth", {
         headers: { token: localStorage.getItem("chat-app-user") },
       });
@@ -146,7 +146,7 @@ const Chat = () => {
                         }}
                       >
                         <img
-                          src={state.profileimg ? 'https://chat-nodeapp-backend.herokuapp.com/'+state.profileimg : blankimg}
+                          src={state.profileimg ? state.profileimg : blankimg}
                           className="img-fluid rounded-circle w-100 h-100"
                           alt
                         />
@@ -202,7 +202,7 @@ const Chat = () => {
                       <div className="d-flex align-items-baseline mb-4">
                         <div className="position-relative avatar">
                           <img
-                            src={state.profileimg ?'https://chat-nodeapp-backend.herokuapp.com/'+ state.profileimg : blankimg}
+                            src={state.profileimg ?state.profileimg : blankimg}
                             className="img-fluid rounded-circle w-100 h-100"
                             alt
                           />
@@ -239,7 +239,7 @@ const Chat = () => {
                         </div>
                         <div className="position-relative avatar">
                           <img
-                            src={myimage ?'https://chat-nodeapp-backend.herokuapp.com/'+ myimage : blankimg}
+                            src={myimage ?'https://chat-nodeapp-backend.herokuapp.com'+ myimage : blankimg}
                             className="img-fluid rounded-circle w-100 h-100"
                             alt
                           />
