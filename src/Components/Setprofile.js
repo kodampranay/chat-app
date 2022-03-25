@@ -145,7 +145,7 @@ const Setprofile = () => {
       }
       if(user_info.profileimg)
       {
-        setProfileimg({...profileimg,image:'https://chat-nodeapp-backend.herokuapp.com/'+user_info.profileimg})
+        setProfileimg({...profileimg,image:'https://chat-nodeapp-backend.herokuapp.com'+user_info.profileimg})
         // navigate('/contacts')
       }
 
