@@ -59,7 +59,7 @@ const Chat = () => {
       navigate("/contacts");
     }
     if (localStorage.getItem("chat-app-user")) {
-      setMyimage('https://chat-nodeapp-backend.herokuapp.com'+JSON.parse(localStorage.getItem("chat-app-user")).profileimg);
+      setMyimage(JSON.parse(localStorage.getItem("chat-app-user")).profileimg);
       const { data } = await axios.get("https://chat-nodeapp-backend.herokuapp.com/auth", {
         headers: { token: localStorage.getItem("chat-app-user") },
       });
