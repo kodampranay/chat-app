@@ -4,6 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import styled from "styled-components";
 import { useEffect } from "react";
+import {io} from 'socket.io-client'
+import audiofile from '../music/request.mp3'
 
 const Container = styled.div`
   a.nav-link {
@@ -35,6 +37,9 @@ const Container = styled.div`
   }
 `;
 const Contacts = () => {
+  
+  const [notifyuser,setNotifyuser]=useState(false);
+  const [onlineusers,setOnlineusers]=useState([])
   const [notifications,setNotifications]=useState([])
   const [bell,setBell]=useState(false);
   const [request, sendRequest] = useState("");
@@ -52,13 +57,15 @@ const Contacts = () => {
       toast.error("Please enter valid Contact");
       setContact("");
     } else {
-      const request = await axios.get(`/${contactnum}/send`, {
+      const request = await axios.get(`https://chat-nodeapp-backend.herokuapp.com/${contactnum}/send`, {
         headers: { token: localStorage.getItem("chat-app-user") },
       });
       if (request.data.status === 1) {
         toast.success(request.data.message);
         setContact("");
         navigate("/contacts");
+        const socket=io('https://chat-nodeapp-backend.herokuapp.com')
+        socket.emit('sendrequest',request.data.id)
       } else {
         toast.error(request.data.message);
         setContact("");
@@ -75,7 +82,27 @@ const Contacts = () => {
     navigate("/");
   }
   useEffect(async () => {
-    const userdata = await axios.get("/contacts", {
+    
+    const socket = io("https://chat-nodeapp-backend.herokuapp.com");
+    socket.emit("userlist", JSON.parse(localStorage.getItem("chat-app-user")));
+    socket.on('online',function (data){
+      setOnlineusers(data)
+    })
+    socket.on('request',async(data)=>
+    {
+               
+      setNotifyuser((prev)=>!prev)      
+      toast.success('you got friend request') 
+      navigate('/')  
+      
+      
+    })
+    socket.on('accepted',(data)=>
+    {
+      toast.success('Your Request was accepted');
+      navigate('/')
+    })
+    const userdata = await axios.get("https://chat-nodeapp-backend.herokuapp.com/contacts", {
       headers: { token: localStorage.getItem("chat-app-user") },
     });
     console.log(userdata);
@@ -92,11 +119,11 @@ const Contacts = () => {
 
   useEffect(async()=>
   {
-    const {data}=await axios.get('/notifications',{headers:{token:localStorage.getItem('chat-app-user')}})
+    const {data}=await axios.get('https://chat-nodeapp-backend.herokuapp.com/notifications',{headers:{token:localStorage.getItem('chat-app-user')}})
     if(data.status===1){
       setNotifications(data.data)
     }
-  },[])
+  },[notifyuser])
 
   //accepting user
 
@@ -105,6 +132,8 @@ const Contacts = () => {
      if(data.status===1)
      {
        toast.success(data.message)
+       const socket=io("https://chat-nodeapp-backend.herokuapp.com")
+       socket.emit('accept',notify)
        navigate('/')
      }
      else{
@@ -113,7 +142,7 @@ const Contacts = () => {
      }
   }
   async function cancel(notify){
-    const {data}=await axios.get(`/${notify}/cancel`,{headers:{token:localStorage.getItem('chat-app-user')}})
+    const {data}=await axios.get(`https://chat-nodeapp-backend.herokuapp.com/${notify}/cancel`,{headers:{token:localStorage.getItem('chat-app-user')}})
     if(data.status===1)
     {
       toast.success(data.message)
@@ -140,6 +169,14 @@ const Contacts = () => {
               </ul>
               <ul className="navbar-nav ms-auto">
                 <li className="nav-item">
+                <button
+                    onClick={()=>navigate('/setprofile')}
+                    type="button"
+                    className="btn btn-light text-dark"
+                    style={{ backgroundColor: "#f1f1f1" }}
+                  >
+                    <i className="fa fa-user "></i>
+                  </button>
                   <button
                     onClick={logout}
                     type="button"
@@ -225,14 +262,14 @@ const Contacts = () => {
                             <img
                               src={
                                 contact.profileimg
-                                  ? contact.profileimg
+                                  ? 'https://chat-nodeapp-backend.herokuapp.com/'+contact.profileimg
                                   : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460__480.png"
                               }
                               className="img-fluid rounded-circle"
                               alt=""
                               style={{ width: "100%", height: "100%" }}
                             />
-                            <span className="position-absolute bottom-0 start-100 translate-middle p-1 bg-success border border-light rounded-circle">
+                            <span className={onlineusers.includes(contact._id)?"position-absolute bottom-0 start-100 translate-middle p-1 bg-success border border-light rounded-circle":"position-absolute bottom-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"}>
                               <span className="visually-hidden">
                                 New alerts
                               </span>

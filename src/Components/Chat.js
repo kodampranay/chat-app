@@ -6,8 +6,12 @@ import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import blankimg from "./../Images/blankimg.webp";
 import { io } from "socket.io-client";
+import audiofile from './../music/ting.mp3'
 
 const Chat = () => {
+  
+  const[typing,setTyping]=useState(false)
+  const [audio] = useState(new Audio(audiofile));
   let num = 0;
   const [recieved, setRecieved] = useState(null);
   const [myimage, setMyimage] = useState();
@@ -18,10 +22,37 @@ const Chat = () => {
   const [loading, setLoading] = useState(true);
   // console.log(state);
 
+
+
+  //typing event
+
+  function typingEvent(e)
+  {
+    const socket = io("https://chat-nodeapp-backend.herokuapp.com");
+    socket?.emit('typing',state._id);
+    
+  }
   useEffect(async () => {
-    const socket = io("https://node-api-chat-backend.herokuapp.com/");
+    // console.log(audio);
+
+    const socket = io("https://chat-nodeapp-backend.herokuapp.com");
+    socket.emit("newuser", JSON.parse(localStorage.getItem("chat-app-user")));
+    socket.on('typing',(data)=>{
+      setTyping(true);
+      setTimeout(() => {
+        setTyping(false);
+      }, 5000);
+    })
     socket.on("msgnotification", (data) => {
-      setRecieved(data)
+      console.log("you got notification");
+      
+
+      console.log(audio);
+      audio.play();
+      
+      
+      setRecieved(data);
+      setTyping(false)
     });
 
     if (!state) {
@@ -29,7 +60,7 @@ const Chat = () => {
     }
     if (localStorage.getItem("chat-app-user")) {
       setMyimage(JSON.parse(localStorage.getItem("chat-app-user")).profileimg);
-      const { data } = await axios.get("/auth", {
+      const { data } = await axios.get("https://chat-nodeapp-backend.herokuapp.com/auth", {
         headers: { token: localStorage.getItem("chat-app-user") },
       });
       if (data.status == 1) {
@@ -43,7 +74,7 @@ const Chat = () => {
     }
   }, []);
   useEffect(async () => {
-    const { data } = await axios.get(`/${state._id}/chat`, {
+    const { data } = await axios.get(`https://chat-nodeapp-backend.herokuapp.com/${state._id}/chat`, {
       headers: { token: localStorage.getItem("chat-app-user") },
     });
     if (data) {
@@ -64,7 +95,7 @@ const Chat = () => {
       return false;
     }
     const { data } = await axios.put(
-      `/${state._id}/sendmessage`,
+      `https://chat-nodeapp-backend.herokuapp.com/${state._id}/sendmessage`,
       { msg: message },
       {
         headers: { token: localStorage.getItem("chat-app-user") },
@@ -78,7 +109,7 @@ const Chat = () => {
 
       var myDiv = document.getElementById("chat-container");
       myDiv.scrollTop = myDiv.scrollHeight;
-      const socket = io("https://node-api-chat-backend.herokuapp.com/");
+      const socket = io("https://chat-nodeapp-backend.herokuapp.com");
       socket.emit("sendmessage", state._id);
       setMessage("");
     }
@@ -115,20 +146,30 @@ const Chat = () => {
                         }}
                       >
                         <img
-                          src={state.profileimg ? state.profileimg : blankimg}
+                          src={state.profileimg ? 'https://chat-nodeapp-backend.herokuapp.com/'+state.profileimg : blankimg}
                           className="img-fluid rounded-circle w-100 h-100"
                           alt
                         />
-                        <span className="position-absolute bottom-0 start-100 translate-middle p-1 bg-success border border-light rounded-circle">
+                        <span className="position-absolute bottom-0 start-100 translate-middle p-1 bg-light border border-light rounded-circle">
                           <span className="visually-hidden">New alerts</span>
                         </span>
                       </div>
                     </a>
                   </li>
                   <li className="nav-item">
-                    <a href="#!" className="nav-link">
+                    <a className="nav-link">
                       {state.name ? state.name : state.number}
                     </a>
+                  </li>
+                  <li className={typing?"d-flex align-item-center":"d-none"}>
+                    <div className="typing ">
+                      <p
+                        className=" m-auto text-shadow text-primary"
+                        style={{ textShadow: "0px 0px 0px #000000" }}
+                      >
+                        is Typing..
+                      </p>
+                    </div>
                   </li>
                 </ul>
               </div>
@@ -161,11 +202,11 @@ const Chat = () => {
                       <div className="d-flex align-items-baseline mb-4">
                         <div className="position-relative avatar">
                           <img
-                            src={state.profileimg ? state.profileimg : blankimg}
+                            src={state.profileimg ?'https://chat-nodeapp-backend.herokuapp.com/'+ state.profileimg : blankimg}
                             className="img-fluid rounded-circle w-100 h-100"
                             alt
                           />
-                          <span className="position-absolute bottom-0 start-100 translate-middle p-1 bg-success border border-light rounded-circle">
+                          <span className="position-absolute bottom-0 start-100 translate-middle p-1 bg-light border border-light rounded-circle">
                             <span className="visually-hidden">New alerts</span>
                           </span>
                         </div>
@@ -198,11 +239,11 @@ const Chat = () => {
                         </div>
                         <div className="position-relative avatar">
                           <img
-                            src={myimage ? myimage : blankimg}
+                            src={myimage ?'https://chat-nodeapp-backend.herokuapp.com/'+ myimage : blankimg}
                             className="img-fluid rounded-circle w-100 h-100"
                             alt
                           />
-                          <span className="position-absolute bottom-0 start-100 translate-middle p-1 bg-success border border-light rounded-circle">
+                          <span className="position-absolute bottom-0 start-100 translate-middle p-1 bg-light border border-light rounded-circle">
                             <span className="visually-hidden">New alerts</span>
                           </span>
                         </div>
@@ -219,8 +260,8 @@ const Chat = () => {
                     type="text"
                     className="form-control border-0"
                     placeholder="Write a message..."
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
+                    value={message} onKeyDown={typingEvent }
+                    onChange={(e) => setMessage(e.target.value) }
                   />
                   <div className="input-group-text bg-transparent border-0"></div>
                   <div className="input-group-text bg-transparent border-0">
@@ -273,6 +314,78 @@ const Container = styled.div`
   .card-body {
     background-color: #fff;
   }
+
+  .typing::before {
+     content: '';
+     position: absolute;
+     top: 0;
+     right: 0;
+     width: 2px;
+     height: 100%;
+     background: #4FC3F7;
+     animation: cursorBlink 0.8s steps(3) infinite
+ }
+
+ @keyframes cursorBlink {
+
+     0%,
+     75% {
+         opacity: 1
+     }
+
+     76%,
+     100% {
+         opacity: 0
+     }
+ }
+
+ .typing {
+     position: relative;
+     -webkit-box-reflect: below 1px linear-gradient(transparent, #3333)
+ }
+
+ .typing h2 {
+     position: relative;
+     color: #4FC3F7;
+     letter-spacing: 5px;
+     font-size: 4rem;
+     overflow: hidden;
+     margin-bottom: 0;
+     animation: type 5s steps(11) infinite
+ }
+
+ @keyframes type {
+
+     0%,
+     100% {
+         width: 0px
+     }
+
+     30%,
+     60% {
+         width: 394.09px
+     }
+ }
+
+ @media(max-width: 330px) {
+     .typing h2 {
+         font-size: 3rem;
+         animation: type 5s steps(10) infinite
+     }
+
+     @keyframes type {
+
+         0%,
+         100% {
+             width: 0px
+         }
+
+         30%,
+         60% {
+             width: 305px
+         }
+     }
+ }
 `;
 
 export default Chat;

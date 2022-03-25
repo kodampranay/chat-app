@@ -30,7 +30,7 @@ const Register = () => {
       return false;
     } else {
       const otpstatus = await axios.post(
-        "/register",
+        "https://chat-nodeapp-backend.herokuapp.com/register",
         { number },
         {
           headers: {

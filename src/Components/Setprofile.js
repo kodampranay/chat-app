@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { updateauth } from "../Redux/slices/auth";
 import { updateNumberState } from "../Redux/slices/registerReducer";
-const Profile = () => {    
+const Setprofile = () => {    
 
   
    const navigate=useNavigate()
@@ -146,7 +146,7 @@ const Profile = () => {
       if(user_info.profileimg)
       {
         setProfileimg({...profileimg,image:'https://chat-nodeapp-backend.herokuapp.com/'+user_info.profileimg})
-        navigate('/contacts')
+        // navigate('/contacts')
       }
 
       
@@ -273,4 +273,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default Setprofile;

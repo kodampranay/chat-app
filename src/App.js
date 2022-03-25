@@ -15,6 +15,7 @@ import axios from 'axios'
 import { updateauth } from './Redux/slices/auth'
 import { useEffect } from 'react';
 import { io } from "socket.io-client";
+import Setprofile from './Components/Setprofile'
 
 
 
@@ -52,7 +53,7 @@ function App() {
    try{
     if(localStorage.getItem('chat-app-user'))
   {
-    const {data}=await axios.get('/auth',{headers:{token:localStorage.getItem('chat-app-user')}})
+    const {data}=await axios.get('https://chat-nodeapp-backend.herokuapp.com/auth',{headers:{token:localStorage.getItem('chat-app-user')}})
     console.log(data)
   }
   else{
@@ -69,12 +70,33 @@ function App() {
   }
   
  })
- useEffect(()=>
+ useEffect(async()=>
  {
-  const socket = io("https://node-api-chat-backend.herokuapp.com/");
-
-  socket.emit('newuser',(JSON.parse(localStorage.getItem('chat-app-user'))))
   
+  if(localStorage.getItem('chat-app-user'))
+  {
+    const {data}=await axios.get('/auth',{headers:{token:localStorage.getItem('chat-app-user')}})
+    console.log(data)
+
+    if(data.status===1)
+    {
+
+    }
+    else{
+      toast.error('you are not authenticated');
+     localStorage.clear();
+    navigate('/')
+    }
+  }
+  else{
+    
+     localStorage.clear();
+    navigate('/')
+  }
+  
+  
+  
+   
  },[])
 
  
@@ -86,9 +108,12 @@ function App() {
     <Routes>
       <Route path='/' element={numberstatus?<Otp number={numberstatus}/>:<Register/>}/>
       <Route path='/profile' element={<Profile/>}/>
+      <Route path='/setprofile' element={<Setprofile/>}/>
       <Route path='/contacts' element={<Contacts/>}/>
       <Route path='/chat' element={<Chat/>}/>
+
       <Route path='*' element={<Navigate to={'/'}/>}/>
+
       
       
       

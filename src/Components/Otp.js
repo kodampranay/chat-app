@@ -26,7 +26,7 @@ const Otp = ({ number }) => {
     if(!otp){return toast.error('Please enter otp')}
     if(!otp.match(/^[0-9]{6}$/)){return toast.error("Invalid OTP")}
     else{
-      const {data}=await axios.post('/login',{number,otp},{headers:{"Content-Type":"application/json"}})
+      const {data}=await axios.post('https://chat-nodeapp-backend.herokuapp.com/login',{number,otp},{headers:{"Content-Type":"application/json"}})
       console.log(data)
       if(data.status===1)
       {
