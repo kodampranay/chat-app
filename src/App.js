@@ -75,7 +75,7 @@ function App() {
   
   if(localStorage.getItem('chat-app-user'))
   {
-    const {data}=await axios.get('/auth',{headers:{token:localStorage.getItem('chat-app-user')}})
+    const {data}=await axios.get('https://chat-nodeapp-backend.herokuapp.com/auth',{headers:{token:localStorage.getItem('chat-app-user')}})
     console.log(data)
 
     if(data.status===1)
