@@ -202,7 +202,7 @@ const Chat = () => {
                       <div className="d-flex align-items-baseline mb-4">
                         <div className="position-relative avatar">
                           <img
-                            src={state.profileimg ?state.profileimg : blankimg}
+                            src={state.profileimg ?'https://songsapi.000webhostapp.com'+state.profileimg : blankimg}
                             className="img-fluid rounded-circle w-100 h-100"
                             alt
                           />
@@ -239,7 +239,7 @@ const Chat = () => {
                         </div>
                         <div className="position-relative avatar">
                           <img
-                            src={myimage ?'https://chat-nodeapp-backend.herokuapp.com'+ myimage : blankimg}
+                            src={myimage ?'https://songsapi.000webhostapp.com'+ myimage : blankimg}
                             className="img-fluid rounded-circle w-100 h-100"
                             alt
                           />
