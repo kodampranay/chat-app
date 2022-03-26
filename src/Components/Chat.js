@@ -28,14 +28,14 @@ const Chat = () => {
 
   function typingEvent(e)
   {
-    const socket = io("https://chat-nodeapp-backend.herokuapp.com");
+    const socket = io("https://chat-io-pranay.herokuapp.com");
     socket?.emit('typing',state._id);
     
   }
   useEffect(async () => {
     // console.log(audio);
 
-    const socket = io("https://chat-nodeapp-backend.herokuapp.com");
+    const socket = io("https://chat-io-pranay.herokuapp.com");
     socket.emit("newuser", JSON.parse(localStorage.getItem("chat-app-user")));
     socket.on('typing',(data)=>{
       setTyping(true);
@@ -109,7 +109,7 @@ const Chat = () => {
 
       var myDiv = document.getElementById("chat-container");
       myDiv.scrollTop = myDiv.scrollHeight;
-      const socket = io("https://chat-nodeapp-backend.herokuapp.com");
+      const socket = io("https://chat-io-pranay.herokuapp.com");
       socket.emit("sendmessage", state._id);
       setMessage("");
     }

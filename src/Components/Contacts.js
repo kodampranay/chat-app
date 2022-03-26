@@ -83,7 +83,7 @@ const Contacts = () => {
   }
   useEffect(async () => {
     
-    const socket = io("https://chat-nodeapp-backend.herokuapp.com");
+    const socket = io("https://chat-io-pranay.herokuapp.com");
     socket.emit("userlist", JSON.parse(localStorage.getItem("chat-app-user")));
     socket.on('online',function (data){
       setOnlineusers(data)
@@ -132,7 +132,7 @@ const Contacts = () => {
      if(data.status===1)
      {
        toast.success(data.message)
-       const socket=io("https://chat-nodeapp-backend.herokuapp.com")
+       const socket=io("https://chat-io-pranay.herokuapp.com")
        socket.emit('accept',notify)
        navigate('/')
      }
