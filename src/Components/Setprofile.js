@@ -84,8 +84,11 @@ const Setprofile = () => {
           navigate('/contacts')
           
         }
+        else{
+          toast.error(response.data.message);
+        }
       }).catch(function (error) {
-        console.error(error);
+        
       });
 
       // axios.post('/updateprofile',{},{headers:{token:localStorage.getItem('token'),"Content-Type:"}})
