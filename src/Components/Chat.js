@@ -146,7 +146,7 @@ const Chat = () => {
                         }}
                       >
                         <img
-                          src={state.profileimg ? state.profileimg : blankimg}
+                          src={state.profileimg ?'https://songsapi.000webhostapp.com'+ state.profileimg : blankimg}
                           className="img-fluid rounded-circle w-100 h-100"
                           alt
                         />
